@@ -48,7 +48,7 @@ jobs:
         run: dart analyze --fatal-infos lib test integration_test
 
       - name: Flutter test
-        run: flutter test
+        run: flutter test --reporter expanded test/core/services/workspace/workspace_tools_service_test.dart
 
       - name: Dart analyze (markstream)
         working-directory: dependencies/markstream
