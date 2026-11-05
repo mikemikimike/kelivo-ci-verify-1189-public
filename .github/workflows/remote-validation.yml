@@ -1,0 +1,59 @@
+name: Remote Validation
+
+env:
+  FLUTTER_VERSION: '3.47.6'
+
+on:
+  push:
+    branches: ['ci-verify-1189', 'ci-verify-snapshot']
+
+jobs:
+  checks:
+    name: Analyze / Test / L10n / Format
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Flutter pub get
+        run: flutter pub get --enforce-lockfile
+
+      - name: Flutter pub get (markstream)
+        working-directory: dependencies/markstream
+        run: flutter pub get --enforce-lockfile
+
+      - name: Dart format (changed files)
+        run: >-
+          dart format --output=none --set-exit-if-changed
+          lib/core/services/workspace/workspace_file_coordinator.dart
+          lib/core/services/workspace/workspace_tools_service.dart
+          test/core/services/workspace/workspace_tools_service_test.dart
+
+      - name: Generate l10n and ensure committed outputs
+        run: |
+          flutter gen-l10n
+          git diff --exit-code -- lib/l10n
+
+      - name: Dart analyze (root package only)
+        run: dart analyze --fatal-infos lib test integration_test
+
+      - name: Flutter test
+        run: flutter test
+
+      - name: Dart analyze (markstream)
+        working-directory: dependencies/markstream
+        run: dart analyze --fatal-infos
+
+      - name: Flutter test (markstream)
+        working-directory: dependencies/markstream
+        run: flutter test
