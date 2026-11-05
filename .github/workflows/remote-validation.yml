@@ -34,13 +34,13 @@ jobs:
 
       - name: Dart format (changed files)
         run: |
-          dart format --output=write
-          lib/core/services/workspace/workspace_file_coordinator.dart
-          lib/core/services/workspace/workspace_tools_service.dart
-          test/core/services/workspace/workspace_tools_service_test.dart
-          git diff --no-ext-diff --
-            lib/core/services/workspace/workspace_file_coordinator.dart
-            lib/core/services/workspace/workspace_tools_service.dart
+          dart format --output=write \
+            lib/core/services/workspace/workspace_file_coordinator.dart \
+            lib/core/services/workspace/workspace_tools_service.dart \
+            test/core/services/workspace/workspace_tools_service_test.dart
+          git diff --no-ext-diff -- \
+            lib/core/services/workspace/workspace_file_coordinator.dart \
+            lib/core/services/workspace/workspace_tools_service.dart \
             test/core/services/workspace/workspace_tools_service_test.dart
 
       - name: Generate l10n and ensure committed outputs
